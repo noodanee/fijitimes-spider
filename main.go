@@ -33,6 +33,7 @@ var catMap = map[int]string{
 type Article struct {
 	Tag     string `json:"tag"`
 	Title   string `json:"title"`
+	Author  string `json:"author"`
 	Url     string `json:"url"`
 	Content string `json:"content"`
 	Date    string `json:"date"`
@@ -107,14 +108,14 @@ func main() {
 		url, _ := s.Find("a").Attr("href")
 		date := strings.Split(s.Find("p").Text(), "|")[0]
 		tag := strings.Split(s.Find("p").Text(), "|")[1]
-		article := Article{tag, title, url, "", date}
+		article := Article{tag, title, "", url, "", date}
 		articles = append(articles, article)
 	})
 
 	for i := 0; i < len(articles); i++ {
 		article := articles[i]
 
-		fmt.Println("-> ", article.Url)
+		fmt.Println(i, "-> ", article.Url)
 		resp, err := client.R().Get(article.Url)
 		if err != nil {
 			log.Fatal(err)
@@ -125,7 +126,13 @@ func main() {
 		}
 
 		content := doc.Find(".single-cat-content").Text()
+		author := doc.Find(".header-extras .byline").Text()
+		date := doc.Find(".header-extras .section-date").Text()
+		articles[i].Author = author
 		articles[i].Content = content
+		articles[i].Date = date
+
+		fmt.Println(article)
 	}
 
 	if len(articles) == 0 {
@@ -152,7 +159,7 @@ func main() {
 
 	if *useFormat == "csv" {
 		writer := csv.NewWriter(file)
-		writer.Write([]string{"tag", "title", "url", "date", "content"})
+		writer.Write([]string{"tag", "title", "author", "url", "date", "content"})
 		for _, article := range articles {
 			writer.Write([]string{article.Tag, article.Title, article.Url, article.Date, article.Content})
 		}
