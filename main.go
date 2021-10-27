@@ -132,7 +132,7 @@ func main() {
 		articles[i].Content = content
 		articles[i].Date = date
 
-		fmt.Println(article)
+		fmt.Println(articles[i])
 	}
 
 	if len(articles) == 0 {
@@ -161,7 +161,7 @@ func main() {
 		writer := csv.NewWriter(file)
 		writer.Write([]string{"tag", "title", "author", "url", "date", "content"})
 		for _, article := range articles {
-			writer.Write([]string{article.Tag, article.Title, article.Url, article.Date, article.Content})
+			writer.Write([]string{article.Tag, article.Title, article.Author, article.Url, article.Date, article.Content})
 		}
 		writer.Flush()
 		return
